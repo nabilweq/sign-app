@@ -1,0 +1,37 @@
+{
+  "name": "sign-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nabilweq/sign-app.git"
+  },
+  "author": "nabeel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nabilweq/sign-app/issues"
+  },
+  "homepage": "https://github.com/nabilweq/sign-app#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1323.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "helmet": "^6.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.10.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.20",
+    "path": "^0.12.7",
+    "xss-clean": "^0.1.1"
+  }
+}
