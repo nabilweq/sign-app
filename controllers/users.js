@@ -3,7 +3,7 @@ const User = require('../models/User');
 const errorWrapper = require('../middlewares/errorWrapper');
 
 module.exports.addUser = errorWrapper(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ phone: req.body.phone });
     if (user) {
         return res.status(400).json({ 
             success: false,

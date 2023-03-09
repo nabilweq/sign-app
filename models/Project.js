@@ -8,7 +8,6 @@ const Project = mongoose.Schema({
     represent: {
         type: String,
         required: true,
-        unique: true
     },
     payment: {
         type: Number,
@@ -17,6 +16,9 @@ const Project = mongoose.Schema({
     discount: {
         type: Number,
         required: true
+    },
+    createdOn: {
+        type: Date,
     }
 })
 
