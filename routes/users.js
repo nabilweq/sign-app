@@ -1,11 +1,10 @@
 const router = require('express').Router();
 
 const { addUser, getMembers, deleteMember } = require('../controllers/users');
-const { roleEnum } = require('../utils/common');
 const authorize = require('../middlewares/auth');
 
-router.post('/',  addUser); //authorize(roleEnum.admin),
-router.get('/',  getMembers); //authorize(roleEnum.admin),
-router.delete('/:id',  deleteMember); //authorize(roleEnum.admin),
+router.post('/', authorize(["admin"]), addUser); 
+router.get('/', authorize(["admin"]), getMembers); 
+router.delete('/:id', authorize(["admin"]), deleteMember);
 
 module.exports = router;

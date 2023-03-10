@@ -1,5 +1,7 @@
 const User = require('../models/User');
 
+const libphonenumberJs = require("libphonenumber-js");
+
 const errorWrapper = require('../middlewares/errorWrapper');
 
 module.exports.addUser = errorWrapper(async (req, res) => {
@@ -11,9 +13,17 @@ module.exports.addUser = errorWrapper(async (req, res) => {
         });
     }
 
+    const phoneNumber = libphonenumberJs.parsePhoneNumberFromString(req.body.phone.toString(), 'IN');
+    if(!phoneNumber.isValid()) {
+        return res.status(400).json({ 
+            success: false,
+            message: 'Invalid phone numberr' 
+        });
+    }
+
     const newUser = new User({
         name: req.body.name,
-        phone: req.body.phone,
+        phone: phoneNumber.number,
         address: req.body.address
     });
 

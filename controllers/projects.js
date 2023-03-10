@@ -1,6 +1,8 @@
 const Project = require('../models/Project');
 const User = require('../models/User');
 
+const getCurrentDate = require('../utils/date');
+
 module.exports.createProject = async (req, res, next) => {
     const user = await User.findById(req.body.userId);
     if (!user) {
@@ -14,7 +16,8 @@ module.exports.createProject = async (req, res, next) => {
         userId: req.body.userId,
         represent: req.body.represent,
         payment: req.body.payment,
-        discount: req.body.discount
+        discount: req.body.discount,
+        createdOn: await getCurrentDate()
     });
 
     await newProject.save();

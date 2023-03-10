@@ -4,75 +4,93 @@ const errorWrapper = require('../middlewares/errorWrapper');
 
 const User = require('../models/User');
 
-const { roleEnum } = require('../utils/common');
+const libphonenumberJs = require("libphonenumber-js");
+const twilio = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
 module.exports.signin = errorWrapper(async (req, res) => {
-  try {
-      const { email, password } = req.body;
-      const user  = await User.findOne({ email, role: { $nin: [roleEnum.admin] } });
+  const phoneNumber = libphonenumberJs.parsePhoneNumberFromString(req.body.phone.toString(), 'IN');
 
-      if (!user) {
-          return res.status(400).json({success: false, message: "User not found with that email"});
-      }
+  if(!phoneNumber.isValid()) {
+    return res.status(400).json({ 
+        success: false,
+        message: 'Invalid phone numberr' 
+    });
+  }
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-          return res.status(401).json({ "status": "error", "message": "Incorrect password" });
-      }
+  const user  = await User.findOne({ phone: phoneNumber.number });
 
-      const userObj = user.toJSON()
-      delete userObj.password;
+  if (!user) {
+      return res.status(400).json({success: false, message: "User not found with the phone number"});
+  }
 
-      const payload = {
-          user: {
-            id: userObj._id,
-            role: userObj.role
-          }
-      };
-      req.user = userObj;
-      return jwt.sign(
-          payload,
-          process.env.JWT_SECRET,
-          { expiresIn: '1 year' },
-          async (err, token) => {
-              if (err) throw err;
-              res.status(200).json({
-                success: true,
-                message: "Login successfull",
-                token,
-                userData: userObj,
-              });
-          }
-      );
-    } catch (err) {
-        res.status(500).json({
-          success: false,
-          message: err.message
-        })
+  const otp = Math.floor(100000 + Math.random() * 900000); //6 digit integer otp
+
+  user.otp = otp;
+  user.otpExpires = Date.now() + 3600000; // 1 hour
+  await user.save();
+
+
+  twilio.messages.create({
+    from: '+15674832806',
+    to: user.phone,
+    body: `Hi ${user.name},\n` +
+    `This is your OTP for Signapp:\n`+
+    otp
+
+  }).then(() => {
+      res.status(200).json({
+        success: true,
+        message: "OTP sent to your phone number",
+      }); 
+  })
+});
+
+module.exports.submitOtp = errorWrapper(async (req, res) => {
+
+  const user = await User.findOne({ otp: req.body.otp, otpExpires: { $gt: Date.now() } });
+  if (!user) {
+    return res.status(400).json({success: false, message: "OTP is invalid or has expired"});
+  }
+
+  user.otp = undefined;
+  user.otpExpires = undefined;
+  await user.save();
+
+  const payload = {
+    user: {
+      id: user.id,
+      type: "user"
     }
+  };
+  req.user = {type: "user", ...user};
+  return jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: '1 year' },
+      async (err, token) => {
+          if (err) throw err;
+          res.status(200).json({
+            success: true,
+            message: "Login successfull",
+            token,
+          });
+      }
+  );
 });
 
 module.exports.adminSignin = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const member  = await Member.findOne({ email, role: roleEnum.admin });
-
-    if (!member) {
-        return res.status(400).json({success: false, message: "Invalid admin email"});
-    }
-
-    const isMatch = await bcrypt.compare(password, member.password);
-    if (!isMatch) {
-        return res.status(401).json({ "status": "error", "message": "Incorrect admin password" });
+    if(req.body.email!= "admin@signapp.com" || req.body.password!= "admin123") {
+      return res.status(400).json({success: false, message: "Invalid username or password"});
     }
 
     const payload = {
         user: {
-          id: member._id,
-          role: member.role
+          id: 'admin',
+          type: "admin"
         }
     };
-    req.user = {role: roleEnum.admin};
+    req.user = {type: "admin"};
     return jwt.sign(
         payload,
         process.env.JWT_SECRET,

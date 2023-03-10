@@ -14,6 +14,12 @@ const User = mongoose.Schema({
         type: String,
         required: true
     },
+    otp: {
+        type: Number
+    },
+    otpExpires: {
+        type: Date
+    }
 })
 
 module.exports = mongoose.model('user', User)
