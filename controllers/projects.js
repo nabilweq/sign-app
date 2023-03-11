@@ -1,6 +1,8 @@
 const Project = require('../models/Project');
 const User = require('../models/User');
 
+const uploadFiles = require('../functions/uploadFile');
+const createAgreement = require('../functions/createAgreement');
 const getCurrentDate = require('../utils/date');
 
 module.exports.createProject = async (req, res) => {
@@ -65,5 +67,26 @@ module.exports.deleteProjects = async (req, res) => {
         data: {
             name: project.represent,
         }
+    })
+}
+
+module.exports.uploadSign = async (req, res) => {
+
+    const project = await Project.findOne({ userId: req.user.id, _id: req.params.id, signUrl: { $exists:false } }).populate('userId');
+    if(!project) {
+        return res.status(404).json({
+            success: false,
+            message: "Project not found"
+        });
+    }
+
+    project.signUrl = await uploadFiles(req.files);
+    project.agreementUrl =  await createAgreement(project);
+    await project.save();
+   
+    res.status(200).json({
+        success: true,
+        message: "sign uploaded and agreement created successfully",
+        project
     })
 }
