@@ -30,10 +30,16 @@ module.exports.createProject = async (req, res, next) => {
 };
 
 module.exports.getProjects = async (req, res, next) => {
+    let projects;
+    if( req.user.type === 'admin' ) {
+        projects = await Project.find().populate('userId');
+    } else {
+        projects = await Project.find({ userId: req.user.id }).populate('userId');
+    }
     res.status(200).json({
         success: true,
         message: "Projects fetched successfully",
-        data: await Project.find().populate('userId')
+        projects
     })
 };
 
