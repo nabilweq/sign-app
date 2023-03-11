@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 const getCurrentDate = require('../utils/date');
 
-module.exports.createProject = async (req, res, next) => {
+module.exports.createProject = async (req, res) => {
     const user = await User.findById(req.body.userId);
     if (!user) {
         return res.status(400).json({ 
@@ -29,12 +29,12 @@ module.exports.createProject = async (req, res, next) => {
     })
 };
 
-module.exports.getProjects = async (req, res, next) => {
+module.exports.getProjects = async (req, res) => {
     let projects;
     if( req.user.type === 'admin' ) {
         projects = await Project.find().populate('userId');
     } else {
-        projects = await Project.find({ userId: req.user.id }).populate('userId');
+        projects = await Project.find({ userId: req.user.id }).select(["-signUrl", "-agreementUrl"]).populate('userId');
     }
     res.status(200).json({
         success: true,
@@ -43,7 +43,15 @@ module.exports.getProjects = async (req, res, next) => {
     })
 };
 
-module.exports.deleteProjects = async (req, res, next) => {
+module.exports.getProjectById = async (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Project fetched successfully",
+        project: await Project.findById(req.params.id).populate('userId')
+    })
+}
+
+module.exports.deleteProjects = async (req, res) => {
     const project = await Project.findByIdAndDelete(req.params.id);
     if(!project) {
         return res.status(404).json({

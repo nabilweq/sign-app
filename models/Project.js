@@ -20,6 +20,12 @@ const Project = mongoose.Schema({
     },
     createdOn: {
         type: Date,
+    },
+    signUrl: {
+        type: String,
+    },
+    agreementUrl: {
+        type: String,
     }
 })
 
