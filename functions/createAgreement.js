@@ -12,7 +12,7 @@ async function createAgreement(project) {
     const content = await hbs.compile(html)("hi")
 
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         timeout: 0,
         args: ["--no-sandbox"]
     })
