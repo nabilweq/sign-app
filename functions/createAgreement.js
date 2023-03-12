@@ -13,7 +13,8 @@ async function createAgreement(project) {
 
     const browser = await puppeteer.launch({
         headless: false,
-        timeout: 0
+        timeout: 0,
+        args: ["--no-sandbox"]
     })
     const page = await browser.newPage()
     await page.setContent(content)
