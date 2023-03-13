@@ -25,7 +25,7 @@ app.use(xss());
 app.use(mongoSanitize());
 app.use(morgan("tiny"));
 
-const whitelist = ["http://127.0.0.1:3000", "localhost", "http://localhost:3000"];
+const whitelist = ["http://127.0.0.1:3000", "localhost", "http://localhost:3000", "https://pdf-vishnu.vercel.app"];
 
 const corsOptions = {
 	// eslint-disable-next-line consistent-return
