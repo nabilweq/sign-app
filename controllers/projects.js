@@ -37,7 +37,7 @@ module.exports.getProjects = async (req, res) => {
     if( req.user.type === 'admin' ) {
         projects = await Project.find().populate('userId');
     } else {
-        projects = await Project.find({ userId: req.user.id }).select(["-signUrl", "-agreementUrl"]).populate('userId');
+        projects = await Project.find({ userId: req.user.id }).populate('userId');
     }
     res.status(200).json({
         success: true,

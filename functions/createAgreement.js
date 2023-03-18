@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 
 const uploadFiles = require('./uploadFile');
 
-const filePath = path.join(process.cwd(),'files','agreement.hbs')
+const filePath = path.join(process.cwd(),'files2','pdf.hbs')
 
 async function createAgreement(project) {
     const html = await fs.readFile(filePath,'utf8')
