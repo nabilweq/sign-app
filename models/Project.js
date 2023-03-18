@@ -14,6 +14,10 @@ const Project = mongoose.Schema({
         type: Number,
         required: true
     },
+    agreementType: {
+        type: String,
+        required: true,
+    },
     discount: {
         type: Number,
         required: true

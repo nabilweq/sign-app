@@ -17,6 +17,7 @@ module.exports.createProject = async (req, res) => {
     const newProject = new Project({
         userId: req.body.userId,
         represent: req.body.represent,
+        agreementType: req.body.agreementType,
         payment: req.body.payment,
         discount: req.body.discount,
         createdOn: await getCurrentDate()
