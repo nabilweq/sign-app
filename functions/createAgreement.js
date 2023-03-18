@@ -5,11 +5,12 @@ const puppeteer = require('puppeteer');
 
 const uploadFiles = require('./uploadFile');
 
-const filePath = path.join(process.cwd(),'files2','pdf.hbs')
+const filePath = path.join(process.cwd(),'files','pdf.hbs')
+console.log(filePath);
 
 async function createAgreement(project) {
     const html = await fs.readFile(filePath,'utf8')
-    const content = await hbs.compile(html)("hi")
+    const content = await hbs.compile(html)(project.toJSON())
 
     const browser = await puppeteer.launch({
         headless: true,
@@ -25,7 +26,7 @@ async function createAgreement(project) {
     })
 
     const files = [{
-        originalname: `Ramya_Dental_Clinic_Service_Agreement_${project.userId.name}.pdf`,
+        originalname: `Ramya_Dental_Clinic_Service_Agreement_${project._id}.pdf`,
         buffer: pdf
     }]
     await browser.close()
