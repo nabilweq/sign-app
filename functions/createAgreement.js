@@ -5,10 +5,15 @@ const puppeteer = require('puppeteer');
 
 const uploadFiles = require('./uploadFile');
 
-const filePath = path.join(process.cwd(),'files','pdf.hbs')
-console.log(filePath);
-
 async function createAgreement(project) {
+    
+    let filePath = '';
+    if(project.agreementType == 'Service') {
+        filePath = path.join(process.cwd(),'files','service.hbs')
+    } else if(project.agreementType == 'Pharmacy') {
+        filePath = path.join(process.cwd(),'files','pharmacy.hbs')
+    }
+    
     const html = await fs.readFile(filePath,'utf8')
     const content = await hbs.compile(html)(project.toJSON())
 

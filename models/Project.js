@@ -17,6 +17,7 @@ const Project = mongoose.Schema({
     agreementType: {
         type: String,
         required: true,
+        enum: [ 'Service', 'Pharmacy']
     },
     discount: {
         type: Number,
