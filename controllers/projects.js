@@ -54,7 +54,31 @@ module.exports.getProjectById = errorWrapper(async (req, res) => {
         message: "Project fetched successfully",
         project: await Project.findById(req.params.id).populate('userId')
     })
-})
+});
+
+module.exports.editProject = errorWrapper(async (req, res) => {
+    const project = await Project.findOne({_id: req.params.projectId, signUrl: null });
+    if(!project) {
+        return res.status(404).json({
+            success: false,
+            message: "Project not found or already signed"
+        });
+    }
+
+    project.userId = req.body.userId
+    project.represent = req.body.represent
+    project.agreementType = req.body.agreementType
+    project.payment = req.body.payment
+    project.discount = req.body.discount
+
+    await project.save();
+
+    res.status(200).json({
+        success: true,
+        message: "Project updated successfully",
+        data: project
+    })
+});
 
 module.exports.deleteProjects = errorWrapper(async (req, res) => {
     const project = await Project.findByIdAndDelete(req.params.id);
