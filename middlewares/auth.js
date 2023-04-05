@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require('../models/User');
 
-const users = [ "user", "admin" ];
+const users = [ "user", "admin", "superadmin" ];
 
 const authorize = (roles = []) => {
   if (typeof roles === "string") {
@@ -21,16 +21,15 @@ const authorize = (roles = []) => {
                       data: err.message,
                     });
                 }
-
-                if(!roles.includes(decoded.user.type)) {
+                if(!roles.includes(decoded.user.role)) {
                     return res.status(401).json({
                       success: false,
                       message: "Unauthorized request",
                     });
                 }
-                if(decoded.user.type === "admin") {
-                  req.user = { id: "admin" };
-                  req.user.type = decoded.user.type
+                if(decoded.user.role === "superadmin") {
+                  req.user = { id: "superadmin" };
+                  req.user.role = decoded.user.role
                   next();
                 } else {
                   const user = await User.findById(decoded.user.id);
@@ -42,7 +41,7 @@ const authorize = (roles = []) => {
                   }
                   
                   req.user = user;
-                  req.user.type = decoded.user.type
+                  req.user.role = decoded.user.role
                   next();
                 }
             })

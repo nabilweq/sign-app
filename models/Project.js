@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const Project = mongoose.Schema({
+    admin: {
+        type: mongoose.Types.ObjectId,
+        ref: 'user',
+        required: true
+    },
     userId: {
         type: mongoose.Types.ObjectId,
         ref: 'user',

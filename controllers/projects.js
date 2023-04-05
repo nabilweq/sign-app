@@ -17,6 +17,7 @@ module.exports.createProject = errorWrapper(async (req, res) => {
     }
     
     const newProject = new Project({
+        admin: req.user.id,
         userId: req.body.userId,
         represent: req.body.represent,
         agreementType: req.body.agreementType,
@@ -36,10 +37,12 @@ module.exports.createProject = errorWrapper(async (req, res) => {
 
 module.exports.getProjects = errorWrapper(async (req, res) => {
     let projects;
-    if( req.user.type === 'admin' ) {
-        projects = await Project.find().populate('userId');
+    if( req.user.role === 'superadmin' ) {
+        projects = await Project.find().populate([{path: "userId", select: [ "name","phone","address" ]}, {path: "admin", select: [ "name","phone","address"]}]);
+    } else if (req.user.role === 'admin') {
+        projects = await Project.find({ admin: req.user.id }).populate('userId', [ "name","phone","address" ]);
     } else {
-        projects = await Project.find({ userId: req.user.id }).populate('userId');
+        projects = await Project.find({ userId: req.user.id });
     }
     res.status(200).json({
         success: true,
@@ -57,7 +60,7 @@ module.exports.getProjectById = errorWrapper(async (req, res) => {
 });
 
 module.exports.editProject = errorWrapper(async (req, res) => {
-    const project = await Project.findOne({_id: req.params.projectId, signUrl: null });
+    const project = await Project.findOne({_id: req.params.projectId, admin: req.user.id, signUrl: null });
     if(!project) {
         return res.status(404).json({
             success: false,
@@ -99,7 +102,7 @@ module.exports.deleteProjects = errorWrapper(async (req, res) => {
 
 module.exports.uploadSign = errorWrapper(async (req, res) => {
 
-    const project = await Project.findOne({ userId: req.user.id, _id: req.params.id, signUrl: { $exists:false } }).populate('userId');
+    const project = await Project.findOne({ userId: req.user.id, _id: req.params.id }).populate('userId');
     if(!project) {
         return res.status(404).json({
             success: false,

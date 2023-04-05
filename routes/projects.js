@@ -7,9 +7,9 @@ const authorize = require('../middlewares/auth');
 const upload = multer()
 
 router.post('/', authorize(["admin"]), createProject);
-router.get('/:id', authorize(["admin", "user"]), getProjectById);
+router.get('/:id', authorize(["superadmin", "admin", "user"]), getProjectById);
 router.put('/:projectId', authorize(["admin"]), editProject);
-router.get('/', authorize(["admin", "user"]), getProjects);
+router.get('/', authorize(["superadmin", "admin", "user"]), getProjects);
 router.delete('/:id', authorize(["admin"]), deleteProjects);
 router.post('/upload-sign/:id', authorize(["user"]), upload.array('sign'), uploadSign);
 

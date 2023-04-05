@@ -1,8 +1,8 @@
 const router = require('express').Router();
 
-const { adminSignin, signin, submitOtp } = require('../controllers/auth');
+const { superAdminSignin, signin, submitOtp } = require('../controllers/auth');
 
-router.post('/login/admin', adminSignin);
+router.post('/login/superadmin', superAdminSignin);
 router.post('/submit-otp', submitOtp);
 router.post('/login', signin);
 

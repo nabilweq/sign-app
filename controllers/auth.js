@@ -59,10 +59,10 @@ module.exports.submitOtp = errorWrapper(async (req, res) => {
   const payload = {
     user: {
       id: user.id,
-      type: "user"
+      role: user.role
     }
   };
-  req.user = {type: "user", ...user};
+  req.user = {...user};
   return jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -73,24 +73,25 @@ module.exports.submitOtp = errorWrapper(async (req, res) => {
             success: true,
             message: "Login successfull",
             token,
+            user
           });
       }
   );
 });
 
-module.exports.adminSignin = async (req, res) => {
+module.exports.superAdminSignin = async (req, res) => {
   try {
-    if(req.body.email!= "admin@signapp.com" || req.body.password!= "admin123") {
+    if(req.body.email!= "superadmin@signapp.com" || req.body.password!= "superadmin123") {
       return res.status(400).json({success: false, message: "Invalid username or password"});
     }
 
     const payload = {
         user: {
-          id: 'admin',
-          type: "admin"
+          id: 'superadmin',
+          role: "superadmin"
         }
     };
-    req.user = {type: "admin"};
+    req.user = {role: "superadmin"};
     return jwt.sign(
         payload,
         process.env.JWT_SECRET,
@@ -99,7 +100,7 @@ module.exports.adminSignin = async (req, res) => {
             if (err) throw err;
             res.status(200).json({
               success: true,
-              message: "Admin Login successfull",
+              message: "Super admin Login successfull",
               token,
             });
         }
