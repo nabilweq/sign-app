@@ -55,7 +55,7 @@ module.exports.getProjectById = errorWrapper(async (req, res) => {
     res.status(200).json({
         success: true,
         message: "Project fetched successfully",
-        project: await Project.findById(req.params.id).populate('userId')
+        project: await Project.findById(req.params.projectId).populate('userId')
     })
 });
 
@@ -84,7 +84,7 @@ module.exports.editProject = errorWrapper(async (req, res) => {
 });
 
 module.exports.deleteProjects = errorWrapper(async (req, res) => {
-    const project = await Project.findByIdAndDelete(req.params.id);
+    const project = await Project.findByIdAndDelete(req.params.projectId);
     if(!project) {
         return res.status(404).json({
             success: false,
@@ -102,11 +102,11 @@ module.exports.deleteProjects = errorWrapper(async (req, res) => {
 
 module.exports.uploadSign = errorWrapper(async (req, res) => {
 
-    const project = await Project.findOne({ userId: req.user.id, _id: req.params.id }).populate('userId');
+    const project = await Project.findOne({ userId: req.user.id, _id: req.params.projectId, signUrl: null }).populate([{path: "userId", select: [ "name","phone","address" ]}, {path: "admin", select: [ "name","phone","address", "signUrl"]}]);
     if(!project) {
         return res.status(404).json({
             success: false,
-            message: "Project not found"
+            message: "Project not found or already signed"
         });
     }
 

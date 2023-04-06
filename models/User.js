@@ -22,7 +22,7 @@ const User = mongoose.Schema({
         type: String,
         required: true
     },
-    signLink: {
+    signUrl: {
         type: String,
     },
     otp: {

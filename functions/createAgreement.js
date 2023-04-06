@@ -15,6 +15,7 @@ async function createAgreement(project) {
     }
     
     const html = await fs.readFile(filePath,'utf8')
+    
     const content = await hbs.compile(html)(project.toJSON())
 
     const browser = await puppeteer.launch({
