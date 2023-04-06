@@ -7,6 +7,8 @@ const getCurrentDate = require('../utils/date');
 
 const errorWrapper = require('../middlewares/errorWrapper');
 
+const twilio = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+
 module.exports.createProject = errorWrapper(async (req, res) => {
     const user = await User.findById(req.body.userId);
     if (!user) {
@@ -113,10 +115,19 @@ module.exports.uploadSign = errorWrapper(async (req, res) => {
     project.signUrl = await uploadFiles(req.files);
     project.agreementUrl =  await createAgreement(project);
     await project.save();
-   
+
+    twilio.messages.create({
+        from: process.env.TWILIO_NUMBER,
+        to: project.userId.phone,
+        body: `Hi ${project.userId.name},\n` +
+        `You had signed for ${project.represent} agreement in Signapp:\n\n`+
+        `Here is the link for the document ${project.agreementUrl}`
+    
+    }).then(() => {
     res.status(200).json({
         success: true,
         message: "sign uploaded and agreement created successfully",
         project
+    })
     })
 })
