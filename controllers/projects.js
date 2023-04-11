@@ -21,10 +21,8 @@ module.exports.createProject = errorWrapper(async (req, res) => {
     const newProject = new Project({
         admin: req.user.id,
         userId: req.body.userId,
-        represent: req.body.represent,
+        owner: req.body.owner,
         agreementType: req.body.agreementType,
-        payment: req.body.payment,
-        discount: req.body.discount,
         createdOn: await getCurrentDate()
     });
 
@@ -99,6 +97,57 @@ module.exports.deleteProjects = errorWrapper(async (req, res) => {
         data: {
             name: project.represent,
         }
+    })
+})
+
+module.exports.generateOtp = errorWrapper(async (req, res) => {
+    const project = await Project.findOne({ userId: req.user.id, _id: req.params.projectId, otpVerified: false }).populate([{path: "userId", select: [ "name","phone","address" ]}]);
+    if(!project) {
+        return res.status(404).json({
+            success: false,
+            message: "Project not found or already verified",
+        });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000); //6 digit integer otp
+
+    project.otp = otp;
+    project.otpExpires = Date.now() + 3600000; // 1 hour
+    await project.save()
+
+    twilio.messages.create({
+        from: process.env.TWILIO_NUMBER,
+        to: project.userId.phone,
+        body: `Hi ${project.userId.name},\n` +
+        `This is your OTP for agreement verification in Signapp: `+
+        otp
+    
+    }).then(() => {
+        res.status(200).json({
+            success: true,
+            message: "Otp send to your phone number",
+        })
+    })
+
+});
+
+module.exports.verifyOtp = errorWrapper(async (req, res) => {
+    const project = await Project.findOne({ userId: req.user.id, _id: req.body.project, otpVerified: false, otp: req.body.otp }).populate([{path: "userId", select: [ "name","phone","address" ]}]);
+    if(!project) {
+        return res.status(404).json({
+            success: false,
+            message: "Project not found or already verified",
+        });
+    }
+
+    project.otpVerified = true;
+    project.otp = undefined;
+    project.otpExpires = undefined;
+
+    res.status(200).json({
+        success: true,
+        message: "Otp verified successfully",
+        project
     })
 })
 

@@ -1,9 +1,11 @@
 const User = require('../models/User');
+const Project = require('../models/Project');
 
 const libphonenumberJs = require("libphonenumber-js");
 
 const errorWrapper = require('../middlewares/errorWrapper');
 const uploadFiles = require('../functions/uploadFile');
+const getCurrentDate = require('../utils/date');
 
 module.exports.createAdmin = errorWrapper(async (req, res) => {
     const phoneNumber = libphonenumberJs.parsePhoneNumberFromString(req.body.phone.toString(), 'IN');
@@ -101,3 +103,19 @@ module.exports.deleteAdmin = errorWrapper(async (req, res) => {
         }
     })
 });
+
+module.exports.getDocumentCount = errorWrapper(async (req, res) => {
+    const filter = {
+        "createdOn": req.body.date   
+          ? await getCurrentDate(req.body.date)
+          : await getCurrentDate(new Date()),
+    }
+
+    const projects = await Project.findOne({ admin: req.body.adminId, ...filter }).count();
+    
+    res.status(200).json({
+        success: true,
+        message: "Count fetched successfully",
+        data: projects
+    })
+})

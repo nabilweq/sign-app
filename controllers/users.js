@@ -84,7 +84,7 @@ module.exports.editMember = errorWrapper(async (req, res) => {
 });
 
 module.exports.deleteMember = errorWrapper(async (req, res) => {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.userId);
     if(!user) {
         return res.status(404).json({
             success: false,

@@ -11,31 +11,33 @@ const Project = mongoose.Schema({
         ref: 'user',
         required: true
     },
-    represent: {
+    owner: {
         type: String,
         required: true,
-    },
-    payment: {
-        type: Number,
-        required: true
     },
     agreementType: {
         type: String,
         required: true,
-        enum: [ 'Service', 'Pharmacy']
-    },
-    discount: {
-        type: Number,
-        required: true
+        enum: [ 'service', 'pharmacy', 'diagnostics', 'pet-clinic', 'ayurveda-clinic']
     },
     createdOn: {
         type: Date,
     },
-    signUrl: {
-        type: String,
+    // signUrl: {
+    //     type: String,
+    // },
+    // agreementUrl: {
+    //     type: String,
+    // },
+    otpVerified: {
+        type: Boolean,
+        default: false,
     },
-    agreementUrl: {
-        type: String,
+    otp: {
+        type: Number
+    },
+    otpExpires: {
+        type: Date
     }
 })
 
