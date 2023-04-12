@@ -106,12 +106,12 @@ module.exports.deleteAdmin = errorWrapper(async (req, res) => {
 
 module.exports.getDocumentCount = errorWrapper(async (req, res) => {
     const filter = {
-        "createdOn": req.body.date   
-          ? await getCurrentDate(req.body.date)
+        "createdOn": req.query.date   
+          ? await getCurrentDate(req.query.date)
           : await getCurrentDate(new Date()),
     }
 
-    const projects = await Project.findOne({ admin: req.body.adminId, ...filter }).count();
+    const projects = await Project.findOne({ admin: req.query.adminId, ...filter }).count();
     
     res.status(200).json({
         success: true,
