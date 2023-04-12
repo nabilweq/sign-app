@@ -24,19 +24,12 @@ module.exports.createAdmin = errorWrapper(async (req, res) => {
         });
     }
 
-    if(req.files.length == 0) {
-        return res.status(400).json({ 
-            success: false,
-            message: 'Sign is required' 
-        });
-    }
-
     const newUser = new User({
         name: req.body.name,
         phone: phoneNumber.number,
         role: "admin",
         address: req.body.address,
-        signUrl: req.files.length > 0 ? await uploadFiles(req.files) : undefined
+        //signUrl: req.files.length > 0 ? await uploadFiles(req.files) : undefined
     });
 
     await newUser.save();
@@ -76,7 +69,7 @@ module.exports.editAdmin = errorWrapper(async (req, res) => {
     admin.name = req.body?.name,
     admin.phone = phoneNumber?.number,
     admin.address = req.body?.address,
-    admin.signUrl = req.files.length > 0 ? await uploadFiles(req.files) : admin.signUrl
+    //admin.signUrl = req.files.length > 0 ? await uploadFiles(req.files) : admin.signUrl
 
     await admin.save();
 
