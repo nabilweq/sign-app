@@ -36,7 +36,7 @@ module.exports.createAdmin = errorWrapper(async (req, res) => {
         phone: phoneNumber.number,
         role: "admin",
         address: req.body.address,
-        signUrl: await uploadFiles(req.files)
+        signUrl: req.files.length > 0 ? await uploadFiles(req.files) : undefined
     });
 
     await newUser.save();

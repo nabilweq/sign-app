@@ -70,10 +70,9 @@ module.exports.editProject = errorWrapper(async (req, res) => {
     }
 
     project.userId = req.body.userId
-    project.represent = req.body.represent
+    project.owner = req.body.owner
     project.agreementType = req.body.agreementType
-    project.payment = req.body.payment
-    project.discount = req.body.discount
+    project.business = req.body.business
 
     await project.save();
 
