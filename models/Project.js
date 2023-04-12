@@ -18,7 +18,7 @@ const Project = mongoose.Schema({
     agreementType: {
         type: String,
         required: true,
-        enum: [ 'service', 'pharmacy', 'diagnostics', 'pet-clinic', 'ayurveda-clinic']
+        enum: [ 'clinic', 'pharmacy', 'diagnostics', 'pet-clinic', 'ayurveda-clinic']
     },
     createdOn: {
         type: Date,
@@ -29,6 +29,10 @@ const Project = mongoose.Schema({
     // agreementUrl: {
     //     type: String,
     // },
+    business: {
+        type: String,
+        required: true,
+    },
     otpVerified: {
         type: Boolean,
         default: false,

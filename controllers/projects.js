@@ -23,6 +23,7 @@ module.exports.createProject = errorWrapper(async (req, res) => {
         userId: req.body.userId,
         owner: req.body.owner,
         agreementType: req.body.agreementType,
+        business: req.body.business,
         createdOn: await getCurrentDate()
     });
 
@@ -143,6 +144,8 @@ module.exports.verifyOtp = errorWrapper(async (req, res) => {
     project.otpVerified = true;
     project.otp = undefined;
     project.otpExpires = undefined;
+
+    await project.save();
 
     res.status(200).json({
         success: true,
